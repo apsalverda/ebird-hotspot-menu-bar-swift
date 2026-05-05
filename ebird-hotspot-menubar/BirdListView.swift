@@ -42,6 +42,27 @@ struct BirdListView: View {
     private var totalSpeciesCount: Int {
         Set(service.observations.map { $0.speciesCode }).count
     }
+
+    private var estimatedHeight: CGFloat {
+        let headerHeight: CGFloat = 70
+        let footerHeight: CGFloat = 35
+        let rowHeight: CGFloat = 34
+        let sectionLabelHeight: CGFloat = 30
+        let dividerHeight: CGFloat = 2
+
+        var height = headerHeight + footerHeight + dividerHeight
+        height += sectionLabelHeight
+        height += CGFloat(todayObservations.count) * rowHeight
+        if !yesterdayObservations.isEmpty {
+            height += sectionLabelHeight
+            height += CGFloat(yesterdayObservations.count) * rowHeight
+        }
+        if !olderObservations.isEmpty {
+            height += sectionLabelHeight
+            height += CGFloat(olderObservations.count) * rowHeight
+        }
+        return height
+    }
     
     @State private var showCounts: Bool = UserDefaults.standard.bool(forKey: "showCounts")
     
@@ -182,7 +203,9 @@ struct BirdListView: View {
             .font(.caption)
             .padding(8)
         }
-        .frame(width: 320, height: 480)
+        .onChange(of: service.observations.count) { _ in
+            NotificationCenter.default.post(name: .contentHeightChanged, object: nil, userInfo: ["height": estimatedHeight])
+        }
         .onReceive(NotificationCenter.default.publisher(for: .settingsSaved)) { _ in
             showCounts = UserDefaults.standard.bool(forKey: "showCounts")
             service.fetchRecentObservations()
@@ -242,4 +265,5 @@ extension SettingsWindowManager: NSWindowDelegate {
 extension Notification.Name {
     static let settingsDidClose = Notification.Name("settingsDidClose")
     static let settingsSaved = Notification.Name("settingsSaved")
+    static let contentHeightChanged = Notification.Name("contentHeightChanged")
 }

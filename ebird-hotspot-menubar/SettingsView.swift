@@ -26,7 +26,10 @@ struct SettingsView: View {
                         .labelsHidden()
                 }
             } footer: {
-                Text("Find your hotspot's location ID by going to the hotspot's website. It's the last part of the URL, for instance 'L4686222' in https://ebird.org/hotspot/L4686222 or 'L524399'")
+                Text("Find your personal eBird API key at https://ebird.org/api/keygen")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Find your hotspot's location ID by going to the hotspot's website. It's the last part of the URL, for instance 'L4686222' in https://ebird.org/hotspot/L4686222")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
