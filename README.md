@@ -2,6 +2,9 @@
 
 A lightweight macOS menu bar app that displays recent bird observations from a specific eBird hotspot.
 
+<img width="256" height="256" alt="icon_128x128@2x" src="https://github.com/user-attachments/assets/7a44d4c9-737b-4ce9-9c9f-48289e5fb02c" />
+
+
 ## What it does
 
 The app sits in your menu bar and shows you the latest bird sightings at a hotspot of your choice, pulled directly from the eBird API. Click the bird icon to see a list of recent observations grouped by date (today, yesterday, and earlier), along with a species count for the last two weeks.
