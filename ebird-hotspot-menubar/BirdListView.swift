@@ -86,6 +86,18 @@ struct BirdListView: View {
                 .buttonStyle(.plain)
 
                 Button {
+                    if let locationID = KeychainHelper.locationID,
+                       let url = URL(string: "https://ebird.org/hotspot/\(locationID)") {
+                        if NSWorkspace.shared.open(url) == false {
+                            print("Failed to open URL")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "link")
+                }
+                
+                .buttonStyle(.plain)
+                Button {
                     service.fetchRecentObservations()
                 } label: {
                     Image(systemName: "arrow.clockwise")
