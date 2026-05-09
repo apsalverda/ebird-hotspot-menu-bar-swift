@@ -2,7 +2,8 @@ import SwiftUI
 
 struct BirdListView: View {
     @ObservedObject var service: EBirdService
-    
+    @ObservedObject private var locationStore = LocationStore.shared
+
     private var todayObservations: [BirdObservation] {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
@@ -71,8 +72,38 @@ struct BirdListView: View {
             // Header
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(service.observations.first?.locName ?? (service.errorMessage != nil ? "Invalid Location ID" : "Location ID"))
-                        .font(.title3)
+                    HStack(spacing: 4) {
+                        Text(locationStore.currentLocation?.name ?? "Select a location")
+                            .font(.title3)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
+                        
+                        Menu {
+                            ForEach(locationStore.locations) { location in
+                                Button {
+                                    locationStore.currentLocationID = location.id
+                                    locationStore.saveLastUsed()
+                                    service.fetchRecentObservations()
+                                } label: {
+                                    HStack {
+                                        Text(location.name)
+                                        if location.id == locationStore.defaultLocationID {
+                                            Image(systemName: "star.fill")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .menuIndicator(.hidden)
+                        .menuStyle(.borderlessButton)
+                        .fixedSize()
+                        .labelStyle(.iconOnly)
+                    }
+                    
                     Text("\(totalSpeciesCount) species in the last two weeks")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -85,18 +116,14 @@ struct BirdListView: View {
                 }
                 .buttonStyle(.plain)
 
-                Button {
-                    if let locationID = KeychainHelper.locationID,
-                       let url = URL(string: "https://ebird.org/hotspot/\(locationID)") {
-                        if NSWorkspace.shared.open(url) == false {
-                            print("Failed to open URL")
-                        }
+                if let locationID = locationStore.currentLocationID,
+                   let url = URL(string: "https://ebird.org/hotspot/\(locationID)") {
+                    Link(destination: url) {
+                        Image(systemName: "link")
                     }
-                } label: {
-                    Image(systemName: "link")
+                    .buttonStyle(.plain)
                 }
-                
-                .buttonStyle(.plain)
+
                 Button {
                     service.fetchRecentObservations()
                 } label: {
@@ -256,13 +283,14 @@ class SettingsWindowManager: NSObject {
             let win = NSWindow(contentViewController: controller)
             win.title = "Settings"
             win.styleMask = [.titled, .closable]
-            win.setContentSize(controller.view.fittingSize)
+            win.setContentSize(NSSize(width: 500, height: controller.view.fittingSize.height))
             win.delegate = self
             win.level = .normal
             win.setFrameTopLeftPoint(NSPoint(x: 0, y: NSScreen.main!.frame.height - 20))
             window = win
         }
         window?.makeKeyAndOrderFront(nil)
+        window?.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
     }
 }

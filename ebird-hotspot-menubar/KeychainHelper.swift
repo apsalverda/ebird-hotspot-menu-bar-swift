@@ -53,11 +53,4 @@ struct KeychainHelper {
         }
     }
 
-    static var locationID: String? {
-        get { load(account: regionCodeAccount) }
-        set {
-            if let value = newValue { save(value, account: regionCodeAccount) }
-            else { delete(account: regionCodeAccount) }
-        }
-    }
 }
