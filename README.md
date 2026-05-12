@@ -33,9 +33,12 @@ The app sits in your menu bar and shows you the latest bird sightings at a hotsp
 ## Setup
 
 If you have not used XCode before:
+
 1. [Download](https://apps.apple.com/us/app/xcode/id497799835) XCode
 2. When you first open the XCode, make sure to install macOS platform components
 3. Configure your Apple ID: Xcode->Settings->Accounts and add your Apple account
+
+Download the source code:
 
 1. Clone the repository and open `ebird-hotspot-menubar.xcodeproj` in Xcode
 2. Build and run the app (⌘R)
