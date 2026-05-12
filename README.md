@@ -2,8 +2,7 @@
 
 A lightweight macOS menu bar app that displays recent bird observations from a specific eBird hotspot.
 
-<img width="256" height="256" alt="icon_128x128@2x" src="https://github.com/user-attachments/assets/7a44d4c9-737b-4ce9-9c9f-48289e5fb02c" />
-
+<img width="1470" height="956" alt="ebird-hotspot-menubar-swift-screenshot" src="https://github.com/user-attachments/assets/c39ccc3a-3bce-4482-b4d3-cfd98f25d0c8" />
 
 ## What it does
 
