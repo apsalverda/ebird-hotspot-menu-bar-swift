@@ -134,14 +134,16 @@ struct SettingsView: View {
                 }
                 Button("Save") {
                     KeychainHelper.apiKey = apiKey.isEmpty ? nil : apiKey
+                    if locationStore.currentLocationID == nil {
+                        locationStore.currentLocationID = locationStore.locations.first?.id
+                    }
                     UserDefaults.standard.set(showCounts, forKey: "showCounts")
                     NotificationCenter.default.post(name: .settingsSaved, object: nil)
                     withAnimation { saved = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation { saved = false }
                     }
-                }
-                .buttonStyle(.borderedProminent)
+                }                .buttonStyle(.borderedProminent)
             }
         }
         .formStyle(.grouped)
