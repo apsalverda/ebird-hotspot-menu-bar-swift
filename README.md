@@ -32,8 +32,8 @@ The app sits in your menu bar and shows you the latest bird sightings at a hotsp
 If you have not used XCode before:
 
 1. [Download](https://apps.apple.com/us/app/xcode/id497799835) XCode
-2. When you first open the XCode, make sure to install macOS platform components
-3. Configure your Apple ID: Xcode->Settings->Accounts and add your Apple account
+2. When you first open XCode, make sure to install macOS platform components
+3. Configure your Apple ID: Xcode->Settings->Accounts, and add your Apple account
 
 Download the source code:
 
