@@ -29,11 +29,26 @@ The app sits in your menu bar and shows you the latest bird sightings at a hotsp
 
 ## Setup
 
+### Option 1: Download and install the  app
+
+1. Download and unzip `ebird-hotspot-menubar.zip`
+2. Move `ebird-hotspot-menubar.app` to your **Applications** folder
+3. Double-click the app. macOS will show a warning saying the app is from an unidentified developer
+4. Click **Cancel** on the dialog
+5. Open **System Settings → Privacy & Security**
+6. Scroll down to the **Security** section, where you should see a message saying the app was blocked
+7. Click **Open Anyway**
+8. Click **Open** in the confirmation dialog that appears
+
+You only need to do this once. After that, the app will open normally.
+
+### Option 2: Build from source
+
 If you have not used XCode before:
 
 1. [Download](https://apps.apple.com/us/app/xcode/id497799835) XCode
 2. When you first open XCode, make sure to install macOS platform components
-3. Configure your Apple ID: Xcode->Settings->Accounts, and add your Apple account
+3. Configure your Apple ID: **Xcode → Settings → Accounts**, and add your Apple account
 
 Download the source code:
 
