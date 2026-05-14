@@ -15,12 +15,24 @@ struct BirdObservation: Identifiable, Decodable {
     }
 }
 
+struct CachedObservations {
+    let observations: [BirdObservation]
+    let timestamp: Date
+}
+
 class EBirdService: ObservableObject {
     @Published var observations: [BirdObservation] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var lastFetched: Date?
 
-    func fetchRecentObservations() {
+    private var cache: [String: CachedObservations] = [:]
+    private var cacheExpiry: TimeInterval {
+        let minutes = UserDefaults.standard.integer(forKey: "cacheExpiryMinutes")
+        return TimeInterval((minutes > 0 ? minutes : 30) * 60)
+    }
+
+    func fetchRecentObservations(forceRefresh: Bool = false) {
         guard let apiKey = KeychainHelper.apiKey, !apiKey.isEmpty else {
             DispatchQueue.main.async { self.errorMessage = "No API key set. Please open Settings." }
             return
@@ -28,6 +40,19 @@ class EBirdService: ObservableObject {
         guard let locationID = LocationStore.shared.currentLocationID, !locationID.isEmpty else {
             DispatchQueue.main.async { self.errorMessage = "No location set. Please open Settings." }
             return
+        }
+
+        // Check cache
+        if !forceRefresh, let cached = cache[locationID] {
+            let age = Date().timeIntervalSince(cached.timestamp)
+            if age < cacheExpiry {
+                DispatchQueue.main.async {
+                    self.observations = cached.observations
+                    self.lastFetched = cached.timestamp
+                    self.errorMessage = nil
+                }
+                return
+            }
         }
 
         DispatchQueue.main.async {
@@ -61,6 +86,10 @@ class EBirdService: ObservableObject {
                     self.observations = decoded
                     if decoded.isEmpty {
                         self.errorMessage = "No observations found for this location."
+                    } else {
+                        let now = Date()
+                        self.cache[locationID] = CachedObservations(observations: decoded, timestamp: now)
+                        self.lastFetched = now
                     }
                 } catch {
                     self.errorMessage = "Failed to decode response."

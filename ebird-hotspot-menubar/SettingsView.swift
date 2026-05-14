@@ -7,6 +7,8 @@ struct SettingsView: View {
     @State private var isFetchingName = false
     @State private var fetchError: String?
     @State private var saved = false
+    @State private var cacheExpiryHours: Int = 0
+    @State private var cacheExpiryMinutes: Int = 30
     @AppStorage("showCounts") private var showCounts: Bool = true
 
     var body: some View {
@@ -123,6 +125,33 @@ struct SettingsView: View {
                         .labelsHidden()
                 }
             }
+            
+            // Expiry window
+            Section {
+                LabeledContent("Refresh interval") {
+                    HStack(spacing: 4) {
+                        Stepper(value: $cacheExpiryHours, in: 0...23, onEditingChanged: { _ in
+                            if cacheExpiryHours == 0 && cacheExpiryMinutes < 15 {
+                                cacheExpiryMinutes = 15
+                            }
+                        }) {
+                            Text("\(cacheExpiryHours)h")
+                                .frame(width: 30)
+                        }
+                        Stepper(value: $cacheExpiryMinutes, in: 0...59, onEditingChanged: { _ in
+                            if cacheExpiryHours == 0 && cacheExpiryMinutes < 15 {
+                                cacheExpiryMinutes = 15
+                            }
+                        }) {
+                            Text("\(cacheExpiryMinutes)m")
+                                .frame(width: 30)
+                        }
+                    }
+                }            } footer: {
+                Text("Minimum 15 minutes. Data will not be re-fetched from eBird more frequently than this.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
 
             // Save button
             HStack {
@@ -138,6 +167,8 @@ struct SettingsView: View {
                         locationStore.currentLocationID = locationStore.locations.first?.id
                     }
                     UserDefaults.standard.set(showCounts, forKey: "showCounts")
+                    let totalMinutes = max(15, cacheExpiryHours * 60 + cacheExpiryMinutes)
+                    UserDefaults.standard.set(totalMinutes, forKey: "cacheExpiryMinutes")
                     NotificationCenter.default.post(name: .settingsSaved, object: nil)
                     withAnimation { saved = true }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -151,6 +182,10 @@ struct SettingsView: View {
         .frame(width: 420)
         .onAppear {
             apiKey = KeychainHelper.apiKey ?? ""
+            let savedMinutes = UserDefaults.standard.integer(forKey: "cacheExpiryMinutes")
+            let minutes = savedMinutes > 0 ? savedMinutes : 30
+            cacheExpiryHours = minutes / 60
+            cacheExpiryMinutes = minutes % 60
         }
     }
 

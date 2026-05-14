@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct BirdListView: View {
     @ObservedObject var service: EBirdService
@@ -40,6 +41,13 @@ struct BirdListView: View {
         }
     }
     
+    private var lastFetchedText: String {
+        guard let lastFetched = service.lastFetched else { return "" }
+        let minutes = Int(Date().timeIntervalSince(lastFetched) / 60)
+        if minutes < 1 { return "Updated just now" }
+        return "Updated \(minutes) min ago"
+    }
+    
     private var totalSpeciesCount: Int {
         Set(service.observations.map { $0.speciesCode }).count
     }
@@ -63,6 +71,68 @@ struct BirdListView: View {
             height += CGFloat(olderObservations.count) * rowHeight
         }
         return height
+    }
+    
+    private func exportObservations() {
+        let locationName = locationStore.currentLocation?.name ?? "Unknown Location"
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        let exportDate = formatter.string(from: Date())
+
+        var lines: [String] = []
+        lines.append("\(locationName) — exported \(exportDate)")
+        lines.append("\(totalSpeciesCount) species")
+        lines.append("")
+
+        if !todayObservations.isEmpty {
+            lines.append("TODAY")
+            for obs in todayObservations {
+                var line = "\(formattedDate(obs.obsDt))  \(obs.comName)"
+                if let count = obs.howMany { line += "  \(count)" }
+                lines.append(line)
+            }
+            lines.append("")
+        }
+
+        if !yesterdayObservations.isEmpty {
+            lines.append("YESTERDAY")
+            for obs in yesterdayObservations {
+                var line = "\(formattedDate(obs.obsDt))  \(obs.comName)"
+                if let count = obs.howMany { line += "  \(count)" }
+                lines.append(line)
+            }
+            lines.append("")
+        }
+
+        if !olderObservations.isEmpty {
+            lines.append("EARLIER")
+            for obs in olderObservations {
+                var line = "\(formattedDate(obs.obsDt))  \(obs.comName)"
+                if let count = obs.howMany { line += "  \(count)" }
+                lines.append(line)
+            }
+        }
+
+        let content = lines.joined(separator: "\n")
+
+        let fileFormatter = DateFormatter()
+        fileFormatter.dateFormat = "yyyy-MM-dd_HHmm"
+        let fileDate = fileFormatter.string(from: Date())
+        let safeName = locationName.replacingOccurrences(of: "/", with: "-")
+        let filename = "\(safeName)_\(fileDate).txt"
+
+        AppDelegate.shared?.popover?.performClose(nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            let savePanel = NSSavePanel()
+            savePanel.nameFieldStringValue = filename
+            savePanel.allowedContentTypes = [.plainText]
+            savePanel.begin { result in
+                if result == .OK, let url = savePanel.url {
+                    try? content.write(to: url, atomically: true, encoding: .utf8)
+                }
+            }
+        }
     }
     
     @State private var showCounts: Bool = UserDefaults.standard.bool(forKey: "showCounts")
@@ -104,6 +174,10 @@ struct BirdListView: View {
                         .labelStyle(.iconOnly)
                     }
                     
+                    Text(lastFetchedText)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
                     Text("\(totalSpeciesCount) species in the last two weeks")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -115,7 +189,7 @@ struct BirdListView: View {
                     Image(systemName: "gear")
                 }
                 .buttonStyle(.plain)
-
+                
                 if let locationID = locationStore.currentLocationID,
                    let url = URL(string: "https://ebird.org/hotspot/\(locationID)") {
                     Link(destination: url) {
@@ -123,13 +197,21 @@ struct BirdListView: View {
                     }
                     .buttonStyle(.plain)
                 }
-
+                
                 Button {
-                    service.fetchRecentObservations()
+                    service.fetchRecentObservations(forceRefresh: true)
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
                 .buttonStyle(.plain)
+
+                Button {
+                    exportObservations()
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .buttonStyle(.plain)
+                
             }
             .padding()
 
