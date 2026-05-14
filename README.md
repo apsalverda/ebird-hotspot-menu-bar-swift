@@ -13,13 +13,13 @@ The app sits in your menu bar and shows you the latest bird sightings at a hotsp
 ## Features
 
 - Shows recent observations for any eBird hotspot by location ID (e.g. `L4686222`)
-- Store up to 10 hotspots, with an optional default hotspot
-- Access a hotspot's ebird page by clicking on the link icon 🔗
-- Groups observations by today, yesterday, and earlier
 - Displays species count for the last two weeks
 - Optionally shows the number of birds per observation
-- Refreshes automatically every time you click the icon
-- API key stored securely in the macOS Keychain
+- Groups observations by today, yesterday, and earlier
+- Store up to 10 hotspots, with an optional default hotspot
+- Access a hotspot's ebird page by clicking on the link icon 🔗
+- Export data by clicking on the export icon
+- eBird API key stored securely in the macOS Keychain
 
 ## Requirements
 
