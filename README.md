@@ -12,14 +12,14 @@ The app sits in your menu bar and shows you the latest bird sightings at a hotsp
 
 ## Features
 
-- Shows recent observations for any eBird hotspot by location ID (e.g. `L4686222`)
-- Displays species count for the last two weeks
-- Optionally shows the number of birds per observation
-- Groups observations by today, yesterday, and earlier
-- Store up to 10 hotspots, with an optional default hotspot
+- Shows most recently observed species for any eBird hotspot, by location ID (e.g. `L4686222`)
+- Displays most recent observation for each species in the last two weeks
+- Optionally shows the number of birds for each observation
+- Provides total species count, and separate counts for today, yesterday, and earlier
+- Allows to store up to 10 hotspots, and set default hotspot
 - Access a hotspot's ebird page by clicking on the link icon 🔗
 - Export data by clicking on the export icon
-- eBird API key stored securely in the macOS Keychain
+- Personal eBird API key stored securely in the macOS Keychain
 
 ## Requirements
 
@@ -50,14 +50,17 @@ If you have not used XCode before:
 2. When you first open XCode, make sure to install macOS platform components
 3. Configure your Apple ID: **Xcode → Settings → Accounts**, and add your Apple account
 
-Download the source code:
+Download and compile the source code:
 
 1. Clone the repository and open `ebird-hotspot-menubar.xcodeproj` in Xcode
 2. Build and run the app (⌘R)
-3. Click the bird icon in the menu bar
-4. Click the gear icon to open Settings
-5. Enter your eBird API key and the location IDs of your hotspots
-6. Click Save
+
+Using the app:
+
+1. Click the bird icon in the menu bar
+2. Click the gear icon to open Settings
+3. Enter your eBird API key and the location IDs of your hotspots
+4. Click Save
 
 To find a hotspot's location ID, go to the hotspot's page on [ebird.org](https://ebird.org) — the ID is the `L` followed by a number in the URL (e.g. `L4686222`). You can also paste the URL into the location ID field in Settings.
 
